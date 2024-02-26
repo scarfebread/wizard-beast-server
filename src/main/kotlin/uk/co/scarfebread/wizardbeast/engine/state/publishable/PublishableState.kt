@@ -5,6 +5,7 @@ import uk.co.scarfebread.wizardbeast.engine.state.publishable.action.PlayerActio
 
 @Serializable
 data class PublishableState(
+    val stateId: Long,
     val player: PlayerState,
     val players: List<PlayerAction>,
     val projectiles: List<String>, // TODO

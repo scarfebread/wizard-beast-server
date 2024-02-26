@@ -7,8 +7,8 @@ import java.util.*
 data class Player(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
-    var x: Int = 0,
-    var y: Int = 0,
+    var x: Float = 100f,
+    var y: Float = 100f,
     val address: SocketAddress,
     var lastConfirmedState: Long = -1,
     var connected: Boolean = true

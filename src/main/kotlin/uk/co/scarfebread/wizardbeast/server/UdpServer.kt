@@ -6,10 +6,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import uk.co.scarfebread.wizardbeast.client.UdpClient
 import uk.co.scarfebread.wizardbeast.client.UdpClient.Companion.EVENT_INVALID
+import uk.co.scarfebread.wizardbeast.event.AcknowledgeEvent
 import uk.co.scarfebread.wizardbeast.event.DeregisterEvent
 import uk.co.scarfebread.wizardbeast.event.EventService
 import uk.co.scarfebread.wizardbeast.event.PlayerActionEvent
 import uk.co.scarfebread.wizardbeast.event.RegisterEvent
+import uk.co.scarfebread.wizardbeast.server.request.AcknowledgeRequest
 import uk.co.scarfebread.wizardbeast.server.request.DeregisterRequest
 import uk.co.scarfebread.wizardbeast.server.request.PlayerActionRequest
 import uk.co.scarfebread.wizardbeast.server.request.RegisterRequest
@@ -37,18 +39,19 @@ class UdpServer(
             val payload = split.second()
             val requestId = split.last()
 
-            println(message)
+            if (eventType != "acknowledge") println(message)
 
             runCatching {
                 when (eventType) {
                     "register" -> eventService.register(RegisterEvent(payload.deserialise<RegisterRequest>(), datagram.address), requestId)
                     "deregister" -> eventService.register(DeregisterEvent(payload.deserialise<DeregisterRequest>(), datagram.address), requestId)
                     "update" -> eventService.register(PlayerActionEvent(payload.deserialise<PlayerActionRequest>(), datagram.address), requestId)
+                    "acknowledge" -> eventService.register(AcknowledgeEvent(payload.deserialise<AcknowledgeRequest>(), datagram.address), requestId)
                     else -> udpClient.send(EVENT_INVALID, "unknown request", datagram.address)
                 }
             }.onFailure {
                 println(it.message)
-                println(it.stackTrace)
+                it.printStackTrace()
                 udpClient.send(EVENT_INVALID, "invalid request", datagram.address)
             }
         }

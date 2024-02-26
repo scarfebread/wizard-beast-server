@@ -1,6 +1,6 @@
 package uk.co.scarfebread.wizardbeast.entity
 
-data class Location(val x: Int?, val y: Int?) {
+data class Location(val x: Float?, val y: Float?) {
     fun isCloseTo(location: Location): Boolean {
         return if (x == null || y == null) {
             false

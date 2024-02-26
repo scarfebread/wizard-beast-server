@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class PlayerState(
     val id: String,
     val name: String,
-    var x: Int = 0,
-    var y: Int = 0,
+    var x: Float = 0f,
+    var y: Float = 0f,
 )

@@ -1,3 +1,6 @@
 package uk.co.scarfebread.wizardbeast.event
 
-data class AcknowledgeEvent(val id: String, val stateId: Long) : Event
+import io.ktor.network.sockets.SocketAddress
+import uk.co.scarfebread.wizardbeast.server.request.AcknowledgeRequest
+
+data class AcknowledgeEvent(val request: AcknowledgeRequest, val address: SocketAddress) : Event

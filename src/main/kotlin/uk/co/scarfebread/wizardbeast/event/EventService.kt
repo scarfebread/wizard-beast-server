@@ -31,14 +31,14 @@ class EventService(
                 playerRepository.getPlayer(event.request.id)?.run {
                     event.request.actions.forEach {
                         when (it.action) {
-                            "x" -> this.x = it.value.toInt()
-                            "y" -> this.y = it.value.toInt()
+                            "x" -> this.x = it.value.toFloat()
+                            "y" -> this.y = it.value.toFloat()
                         }
                     }
                 }
             }
             is AcknowledgeEvent -> {
-                playerRepository.getPlayer(event.id)?.acknowledge(event.stateId)
+                playerRepository.getPlayer(event.request.player)?.acknowledge(event.request.stateId)
             }
         }
     }

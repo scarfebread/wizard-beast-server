@@ -39,6 +39,7 @@ class GameStateManager {
         )
 
         return PublishableState(
+            snapshotId,
             player.toState(),
             buildPlayerStateChange(player, snapshot, previousSnapshot)
                 .map { otherPlayerStateChange ->

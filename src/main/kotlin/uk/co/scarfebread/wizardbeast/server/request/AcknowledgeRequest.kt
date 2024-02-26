@@ -3,4 +3,7 @@ package uk.co.scarfebread.wizardbeast.server.request
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AcknowledgeRequest(val stateId: Long)
+data class AcknowledgeRequest(
+    val stateId: Long,
+    val player: String,
+)
