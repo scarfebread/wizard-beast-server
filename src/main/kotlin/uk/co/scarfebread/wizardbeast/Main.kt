@@ -25,6 +25,7 @@ fun main() = runBlocking {
     launch {
         UdpServer(
             serverSocket,
+            udpClient,
             eventService
         ).start()
     }

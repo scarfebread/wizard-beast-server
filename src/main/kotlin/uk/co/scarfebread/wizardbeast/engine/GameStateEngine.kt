@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import uk.co.scarfebread.wizardbeast.client.UdpClient
+import uk.co.scarfebread.wizardbeast.client.UdpClient.Companion.EVENT_STATE
 import uk.co.scarfebread.wizardbeast.engine.state.server.GameStateManager
 import uk.co.scarfebread.wizardbeast.entity.PlayerRepository
 import java.lang.System.currentTimeMillis
@@ -27,8 +28,10 @@ class GameStateEngine(
             playerRepository.getPlayers().forEach { player ->
                 // TODO use compression https://stackoverflow.com/questions/13477321/fastest-way-to-gzip-and-udp-a-large-amount-of-strings-in-java
                 udpClient.send(
+                    EVENT_STATE,
                     json.encodeToString(
                         gameStateManager.publishState(snapshotId, player)
+                        // TODO account for RTT
                     ),
                     player.address
                 )

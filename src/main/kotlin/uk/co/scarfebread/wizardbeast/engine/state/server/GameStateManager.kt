@@ -8,7 +8,7 @@ import uk.co.scarfebread.wizardbeast.engine.state.server.delta.PlayerStateChange
 import uk.co.scarfebread.wizardbeast.entity.Player
 import uk.co.scarfebread.wizardbeast.entity.PlayerRepository
 
-class GameStateManager() {
+class GameStateManager {
     private val players = mutableListOf<Player>()
     private val enemies = mutableListOf<String>()
     private val projectiles = mutableListOf<String>()
