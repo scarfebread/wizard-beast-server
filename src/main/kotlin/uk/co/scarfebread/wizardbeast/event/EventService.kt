@@ -8,12 +8,8 @@ class EventService(
     private val playerRepository: PlayerRepository,
     private val udpClient: UdpClient
 ) {
-    private val events = mutableListOf<Event>()
-
     fun register(event: Event) {
-        events.add(event)
-
-        when(event) {
+        when (event) {
             is RegisterEvent -> {
                 playerRepository.addPlayer(
                     Player(
@@ -27,9 +23,9 @@ class EventService(
             is PlayerActionEvent -> { // TODO should this be move event?
                 playerRepository.getPlayer(event.request.id)?.run {
                     event.request.actions.forEach {
-                        when(it.action) {
-                            "x" -> this.x = it.value
-                            "y" -> this.y = it.value
+                        when (it.action) {
+                            "x" -> this.x = it.value.toInt()
+                            "y" -> this.y = it.value.toInt()
                         }
                     }
                 }
@@ -38,11 +34,5 @@ class EventService(
                 playerRepository.getPlayer(event.id)?.acknowledge(event.stateId)
             }
         }
-    }
-
-    fun consume() = events.let {
-        val immutableCopy = events.toList()
-        events.clear()
-        immutableCopy
     }
 }

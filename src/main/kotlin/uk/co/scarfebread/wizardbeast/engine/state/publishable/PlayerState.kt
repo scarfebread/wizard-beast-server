@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PlayerState(
     val name: String,
-    var x: String = "",
-    var y: String = "",
+    var x: Int = 0,
+    var y: Int = 0,
 )

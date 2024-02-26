@@ -5,10 +5,8 @@ import uk.co.scarfebread.wizardbeast.entity.Player
 
 class StatePublisher {
     fun shouldPublish() {
-
     }
     fun buildDelta(player: Player, currentState: GameState, lastConfirmedState: GameState) {
-
     }
 }
 

@@ -7,8 +7,8 @@ import java.util.*
 data class Player(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
-    var x: String = "",
-    var y: String = "",
+    var x: Int = 0,
+    var y: Int = 0,
     val address: SocketAddress,
     var lastConfirmedState: Long = -1,
     var connected: Boolean = true
@@ -21,7 +21,5 @@ data class Player(
         }
     }
 
-    fun isCloseTo(otherPlayer: Player): Boolean {
-        return true // TODO
-    }
+    fun location() = Location(x, y)
 }
