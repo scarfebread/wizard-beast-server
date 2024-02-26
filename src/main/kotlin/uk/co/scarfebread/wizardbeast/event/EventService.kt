@@ -20,6 +20,9 @@ class EventService(
                     udpClient.send(this.id, event.address)
                 }
             }
+            is DeregisterEvent -> {
+                playerRepository.removePlayer(event.request.id)
+            }
             is PlayerActionEvent -> { // TODO should this be move event?
                 playerRepository.getPlayer(event.request.id)?.run {
                     event.request.actions.forEach {

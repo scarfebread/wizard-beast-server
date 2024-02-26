@@ -7,6 +7,7 @@ import io.ktor.utils.io.core.ByteReadPacket
 import io.ktor.utils.io.core.readUTF8Line
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import uk.co.scarfebread.wizardbeast.event.Event
 import uk.co.scarfebread.wizardbeast.event.EventService
 import uk.co.scarfebread.wizardbeast.event.PlayerActionEvent
 import uk.co.scarfebread.wizardbeast.event.RegisterEvent
@@ -28,9 +29,7 @@ class UdpServer(
             runCatching {
                 when (message.deserialise<Request>().action) {
                     "register" -> eventService.register(RegisterEvent(message.deserialise<RegisterRequest>(), datagram.address))
-                    "deregister" -> {
-                        println("player deregistered")
-                    }
+                    "deregister" -> eventService.register(Dereeg(message.deserialise<RegisterRequest>(), datagram.address))
                     "update" -> eventService.register(PlayerActionEvent(message.deserialise<PlayerActionRequest>(), datagram.address))
                     else -> send("unknown event", datagram.address)
                 }
