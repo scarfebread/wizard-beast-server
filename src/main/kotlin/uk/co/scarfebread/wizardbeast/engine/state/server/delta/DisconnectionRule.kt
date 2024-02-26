@@ -10,7 +10,7 @@ class DisconnectionRule : PublishRule {
         otherPlayerStateChange: PlayerStateChange
     ): PlayerAction {
         return if (otherPlayerStateChange.current == null && otherPlayerStateChange.previous != null) {
-            DisconnectAction(otherPlayerStateChange.previous.name)
+            DisconnectAction(otherPlayerStateChange.previous.id)
         } else {
             NoAction
         }

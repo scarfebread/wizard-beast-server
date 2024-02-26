@@ -17,15 +17,16 @@ class MoveRule : PublishRule {
         val otherPlayerLocation = otherPlayerStateChange.current.location()
 
         return if (
-            previousOtherPlayerLocation.x != otherPlayerLocation.x ||
-            previousOtherPlayerLocation.y != otherPlayerLocation.y
+            otherPlayerStateChange.isComplete() &&
+            (previousOtherPlayerLocation.x != otherPlayerLocation.x ||
+            previousOtherPlayerLocation.y != otherPlayerLocation.y)
         ) {
             if (
                 playerLocation.isCloseTo(otherPlayerLocation) ||
                 previousPlayerLocation.isCloseTo(previousOtherPlayerLocation)
             ) {
                 MoveAction(
-                    otherPlayerStateChange.current!!.name,
+                    otherPlayerStateChange.current!!.id,
                     otherPlayerStateChange.current.x,
                     otherPlayerStateChange.current.y
                 )

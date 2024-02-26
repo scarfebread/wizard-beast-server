@@ -3,6 +3,7 @@ package uk.co.scarfebread.wizardbeast.engine.state.server
 import uk.co.scarfebread.wizardbeast.engine.state.publishable.PublishableState
 import uk.co.scarfebread.wizardbeast.engine.state.publishable.action.NoAction
 import uk.co.scarfebread.wizardbeast.engine.state.server.delta.ConnectionRule
+import uk.co.scarfebread.wizardbeast.engine.state.server.delta.DisconnectionRule
 import uk.co.scarfebread.wizardbeast.engine.state.server.delta.MoveRule
 import uk.co.scarfebread.wizardbeast.engine.state.server.delta.PlayerStateChange
 import uk.co.scarfebread.wizardbeast.entity.Player
@@ -44,8 +45,9 @@ class GameStateManager {
             buildPlayerStateChange(player, snapshot, previousSnapshot)
                 .map { otherPlayerStateChange ->
                     listOf(
-                        MoveRule(),
                         ConnectionRule(),
+                        MoveRule(),
+                        DisconnectionRule()
                     ).map {
                         it.apply(
                             playerStateChange,
@@ -75,12 +77,12 @@ class GameStateManager {
             previousSnapshot.players
                 .filter { it.id != player.id }
                 .filter { previousSnapshotPlayer ->
-                    otherPlayerStateChanges.firstOrNull { it.current?.id == previousSnapshotPlayer.id } != null
+                    otherPlayerStateChanges.firstOrNull { it.current?.id == previousSnapshotPlayer.id } == null
                 }
                 .map { oldPlayerState ->
                     PlayerStateChange(
                         oldPlayerState,
-                        snapshot.players.firstOrNull { it.id == oldPlayerState.id },
+                        null,
                     )
                 }
         )
