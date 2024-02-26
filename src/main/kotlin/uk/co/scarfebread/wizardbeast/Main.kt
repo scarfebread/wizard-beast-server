@@ -35,4 +35,6 @@ fun main() = runBlocking {
         gameStateManager,
         udpClient,
     ).start()
+
+    Unit
 }

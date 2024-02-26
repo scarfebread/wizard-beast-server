@@ -1,3 +1,6 @@
 package uk.co.scarfebread.wizardbeast.engine.state.publishable.action
 
-interface PlayerAction
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface PlayerAction

@@ -17,33 +17,38 @@ class GameStateEngine(
     private val json: Json = Json { ignoreUnknownKeys = true }
 ) {
     fun start() = runBlocking {
-        val networkTick = 1000 / 64
-        var snapshotId = 0L
+        runCatching {
+            val networkTick = 1000 / 64
+            var snapshotId = 0L
 
-        while (true) {
-            val startTime = currentTimeMillis()
+            while (true) {
+                val startTime = currentTimeMillis()
 
-            gameStateManager.createSnapshot(snapshotId)
+                gameStateManager.createSnapshot(snapshotId)
 
-            playerRepository.getPlayers().forEach { player ->
-                // TODO use compression https://stackoverflow.com/questions/13477321/fastest-way-to-gzip-and-udp-a-large-amount-of-strings-in-java
-                udpClient.send(
-                    EVENT_STATE,
-                    json.encodeToString(
-                        gameStateManager.publishState(snapshotId, player)
-                        // TODO account for RTT
-                    ),
-                    player.address
-                )
+                playerRepository.getPlayers().forEach { player ->
+                    // TODO use compression https://stackoverflow.com/questions/13477321/fastest-way-to-gzip-and-udp-a-large-amount-of-strings-in-java
+                    udpClient.send(
+                        EVENT_STATE,
+                        json.encodeToString(
+                            gameStateManager.publishState(snapshotId, player)
+                            // TODO account for RTT
+                        ),
+                        player.address
+                    )
+                }
+
+                val elapsed = currentTimeMillis() - startTime
+
+                if (elapsed < networkTick) {
+                    delay(networkTick - elapsed)
+                }
+
+                snapshotId++
             }
-
-            val elapsed = currentTimeMillis() - startTime
-
-            if (elapsed < networkTick) {
-                delay(networkTick - elapsed)
-            }
-
-            snapshotId++
+        }.onFailure {
+            println(it.message)
+            it.printStackTrace()
         }
     }
 }
