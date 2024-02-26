@@ -17,9 +17,9 @@ class GameStateManager {
 
     fun createSnapshot(stateId: Long) {
         stateSnapshots[stateId] = GameState(
-            players.toList(),
-            enemies.toList(),
-            projectiles.toList(),
+            players.toList().map { it.copy() },
+            enemies.toList(), // TODO copy
+            projectiles.toList(), // TODO copy
         )
 
         stateSnapshots.remove(stateId - 64)

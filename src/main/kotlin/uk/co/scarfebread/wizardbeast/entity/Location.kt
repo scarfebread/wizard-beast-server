@@ -19,7 +19,7 @@ data class Location(val x: Float?, val y: Float?) {
     }
 
     companion object {
-        private const val Y_DISTANCE_LIMIT = 100
-        private const val X_DISTANCE_LIMIT = 100
+        private const val Y_DISTANCE_LIMIT = 500
+        private const val X_DISTANCE_LIMIT = 500
     }
 }
