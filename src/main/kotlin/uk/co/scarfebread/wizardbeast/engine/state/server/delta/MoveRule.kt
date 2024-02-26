@@ -25,11 +25,14 @@ class MoveRule : PublishRule {
                 playerLocation.isCloseTo(otherPlayerLocation) ||
                 previousPlayerLocation.isCloseTo(previousOtherPlayerLocation)
             ) {
-                MoveAction(
-                    otherPlayerStateChange.current!!.id,
-                    otherPlayerStateChange.current.x,
-                    otherPlayerStateChange.current.y
-                )
+                otherPlayerStateChange.current!!.let {
+                    MoveAction(
+                        player = it.id,
+                        x = it.x,
+                        y = it.y,
+                        input = it.input
+                    )
+                }
             } else {
                 NoAction
             }

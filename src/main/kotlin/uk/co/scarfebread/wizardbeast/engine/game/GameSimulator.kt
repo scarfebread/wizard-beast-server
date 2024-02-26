@@ -8,13 +8,13 @@ import java.lang.System.currentTimeMillis
 class GameSimulator(private val playerRepository: PlayerRepository) {
     fun handleInput(playerId: String, actions: List<Action>) {
         playerRepository.getPlayer(playerId)?.let { player ->
-            player.inputQueue[currentTimeMillis()] = Input().apply {
+            player.inputQueue[currentTimeMillis()] = player.input.copy().apply {
                 actions.forEach {
                     when(it.key) {
-                        DOWN -> this.down = it.currentlyPressed
-                        UP -> this.up = it.currentlyPressed
-                        LEFT -> this.left = it.currentlyPressed
-                        RIGHT -> this.right = it.currentlyPressed
+                        DOWN -> down = it.currentlyPressed
+                        UP -> up = it.currentlyPressed
+                        LEFT -> left = it.currentlyPressed
+                        RIGHT -> right = it.currentlyPressed
                     }
                 }
             }
