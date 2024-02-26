@@ -7,8 +7,10 @@ import java.util.*
 data class Player(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
-    var x: Float = 100f,
-    var y: Float = 100f,
+    val input: Input = Input(),
+    val inputQueue: MutableMap<Long, Input> = mutableMapOf(),
+    var x: Float = randomPosition(800 - 25),
+    var y: Float = randomPosition(480 - 25),
     val address: SocketAddress,
     var lastConfirmedState: Long = -1,
     var connected: Boolean = true
@@ -22,4 +24,17 @@ data class Player(
     }
 
     fun location() = Location(x, y)
+
+    fun consumeInput() =  inputQueue.toMap().also { inputQueue.clear() }
+
+    fun move(speed: Float) {
+        if (input.down && !input.up) y -= speed
+        if (input.up && !input.down) y += speed
+        if (input.left && !input.right) x -= speed
+        if (input.right && !input.left) x += speed
+    }
+
+    companion object {
+        private fun randomPosition(max: Int) = (0..max).random().toFloat()
+    }
 }

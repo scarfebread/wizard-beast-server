@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PlayerActionRequest(val id: String, val actions: List<Action>) {
     @Serializable
-    class Action(val action: String, val value: String)
+    class Action(val key: Int, val currentlyPressed: Boolean)
 }

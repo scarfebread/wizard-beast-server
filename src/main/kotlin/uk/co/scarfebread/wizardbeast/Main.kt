@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import uk.co.scarfebread.wizardbeast.client.UdpClient
 import uk.co.scarfebread.wizardbeast.engine.GameStateEngine
+import uk.co.scarfebread.wizardbeast.engine.game.GameSimulator
 import uk.co.scarfebread.wizardbeast.engine.state.server.GameStateManager
 import uk.co.scarfebread.wizardbeast.event.EventService
 import uk.co.scarfebread.wizardbeast.server.UdpServer
@@ -20,7 +21,8 @@ fun main() = runBlocking {
 
     val gameStateManager = GameStateManager()
     val playerRepository = gameStateManager.createPlayerRepository()
-    val eventService = EventService(playerRepository, udpClient)
+    val gameSimulator = GameSimulator(playerRepository)
+    val eventService = EventService(playerRepository, udpClient, gameSimulator)
 
     launch {
         UdpServer(
@@ -33,6 +35,7 @@ fun main() = runBlocking {
     GameStateEngine(
         playerRepository,
         gameStateManager,
+        gameSimulator,
         udpClient,
     ).start()
 
