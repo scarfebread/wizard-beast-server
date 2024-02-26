@@ -1,28 +1,33 @@
 package uk.co.scarfebread.wizardbeast.server
 
 import io.ktor.network.selector.SelectorManager
+import io.ktor.network.sockets.BoundDatagramSocket
+import io.ktor.network.sockets.Datagram
 import io.ktor.network.sockets.InetSocketAddress
+import io.ktor.network.sockets.ServerSocket
+import io.ktor.network.sockets.SocketAddress
 import io.ktor.network.sockets.aSocket
+import io.ktor.utils.io.core.ByteReadPacket
 import io.ktor.utils.io.core.readUTF8Line
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import uk.co.scarfebread.wizardbeast.event.EventService
+import uk.co.scarfebread.wizardbeast.event.PlayerActionEvent
 import uk.co.scarfebread.wizardbeast.event.RegisterEvent
+import uk.co.scarfebread.wizardbeast.server.request.PlayerActionRequest
 import uk.co.scarfebread.wizardbeast.server.request.RegisterRequest
 import uk.co.scarfebread.wizardbeast.server.request.Request
 import uk.co.scarfebread.wizardbeast.state.PlayerState
 
 class UdpServer(
+    private val serverSocket: BoundDatagramSocket,
     private val eventService: EventService,
     private val json: Json = Json { ignoreUnknownKeys = true }
 ) {
     suspend fun start() = runBlocking {
-        val serverSocket = aSocket(SelectorManager(Dispatchers.IO))
-            .udp()
-            .bind(InetSocketAddress("127.0.0.1", 9002))
-
         while (true) {
+            // TODO authorisation
             val datagram = serverSocket.receive()
             val message = datagram.packet.readUTF8Line() ?: continue
 
@@ -32,17 +37,18 @@ class UdpServer(
                     "deregister" -> {
                         println("player deregistered")
                     }
-                    "update" -> {
-                        // or something more specific?
-                        // create player event
-                    }
-                    else -> println("unknown event")
+                    "update" -> eventService.register(PlayerActionEvent(message.deserialise<PlayerActionRequest>(), datagram.address))
+                    else -> send("unknown event", datagram.address)
                 }
             }.onFailure {
                 println(it.message)
+                println(it.stackTrace)
+                send("invalid event", datagram.address)
             }
         }
     }
 
     private inline fun <reified T> String.deserialise() = json.decodeFromString<T>(this)
+
+    private suspend fun send(message: String, address: SocketAddress) = serverSocket.send(Datagram(ByteReadPacket(message.encodeToByteArray()), address))
 }
