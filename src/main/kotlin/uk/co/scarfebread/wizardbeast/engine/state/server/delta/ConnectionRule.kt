@@ -11,6 +11,7 @@ class ConnectionRule : PublishRule {
     ): PlayerAction {
         return if (otherPlayerStateChange.previous == null && otherPlayerStateChange.current != null) {
             ConnectAction(
+                otherPlayerStateChange.current.id,
                 otherPlayerStateChange.current.name,
                 otherPlayerStateChange.current.x,
                 otherPlayerStateChange.current.y

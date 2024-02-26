@@ -5,17 +5,25 @@ import io.ktor.network.sockets.Datagram
 import io.ktor.network.sockets.SocketAddress
 import io.ktor.utils.io.core.ByteReadPacket
 import kotlinx.coroutines.runBlocking
+import java.util.*
 
 class UdpClient(private val serverSocket: BoundDatagramSocket) {
-    fun send(event: String, message: String, address: SocketAddress) = runBlocking {
+    fun send(
+        event: String,
+        message: String,
+        address: SocketAddress,
+        requestId: String = requestId()
+    ) = runBlocking {
         serverSocket.send(Datagram(ByteReadPacket(
             message
-                .prefixEvent(event)
+                .toEvent(event, requestId)
                 .encodeToByteArray()
         ), address))
     }
 
-    private fun String.prefixEvent(event: String) = "$event-$this"
+    private fun String.toEvent(event: String, requestId: String) = "$event--$this--$requestId"
+
+    private fun requestId() = UUID.randomUUID().toString()
 
     companion object {
         const val EVENT_STATE = "state"

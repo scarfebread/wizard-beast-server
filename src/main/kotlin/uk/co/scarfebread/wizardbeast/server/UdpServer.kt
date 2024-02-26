@@ -26,12 +26,24 @@ class UdpServer(
             // TODO authorisation
             val datagram = serverSocket.receive()
             val message = datagram.packet.readUTF8Line() ?: continue
+            val split = message.split("--", limit = 3)
+
+            if (split.size != 3) {
+                println("[WARN] Invalid request: $message")
+                continue
+            }
+
+            val eventType = split.first()
+            val payload = split.second()
+            val requestId = split.last()
+
+            println(message)
 
             runCatching {
-                when (message.deserialise<Request>().action) {
-                    "register" -> eventService.register(RegisterEvent(message.deserialise<RegisterRequest>(), datagram.address))
-                    "deregister" -> eventService.register(DeregisterEvent(message.deserialise<DeregisterRequest>(), datagram.address))
-                    "update" -> eventService.register(PlayerActionEvent(message.deserialise<PlayerActionRequest>(), datagram.address))
+                when (eventType) {
+                    "register" -> eventService.register(RegisterEvent(payload.deserialise<RegisterRequest>(), datagram.address), requestId)
+                    "deregister" -> eventService.register(DeregisterEvent(payload.deserialise<DeregisterRequest>(), datagram.address), requestId)
+                    "update" -> eventService.register(PlayerActionEvent(payload.deserialise<PlayerActionRequest>(), datagram.address), requestId)
                     else -> udpClient.send(EVENT_INVALID, "unknown request", datagram.address)
                 }
             }.onFailure {
@@ -43,4 +55,6 @@ class UdpServer(
     }
 
     private inline fun <reified T> String.deserialise() = json.decodeFromString<T>(this)
+
+    private fun List<String>.second() = this[1]
 }

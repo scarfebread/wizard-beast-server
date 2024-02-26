@@ -13,7 +13,7 @@ data class Player(
     var lastConfirmedState: Long = -1,
     var connected: Boolean = true
 ) {
-    fun toState() = PlayerState(name, x, y)
+    fun toState() = PlayerState(id, name, x, y)
 
     fun acknowledge(stateId: Long) {
         if (lastConfirmedState < stateId) {

@@ -12,7 +12,7 @@ class EventService(
     private val udpClient: UdpClient,
     private val json: Json = Json { ignoreUnknownKeys = true }
 ) {
-    fun register(event: Event) {
+    fun register(event: Event, requestId: String) {
         when (event) {
             is RegisterEvent -> {
                 playerRepository.addPlayer(
@@ -21,7 +21,7 @@ class EventService(
                         address = event.address
                     )
                 ).run {
-                    udpClient.send(EVENT_REGISTERED, json.encodeToString(this.toState()), event.address)
+                    udpClient.send(EVENT_REGISTERED, json.encodeToString(this.toState()), event.address, requestId)
                 }
             }
             is DeregisterEvent -> {
