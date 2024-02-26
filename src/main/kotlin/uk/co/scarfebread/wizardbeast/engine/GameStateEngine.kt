@@ -22,7 +22,7 @@ class GameStateEngine(
 
     fun start() = runBlocking {
         runCatching {
-            val networkTick = 1000 / 64
+            val networkTick = 1000f / 64f
             var snapshotId = 0L
 
             while (true) {
@@ -49,7 +49,7 @@ class GameStateEngine(
                 val elapsed = currentTimeMillis() - startTime
 
                 if (elapsed < networkTick) {
-                    delay(networkTick - elapsed)
+                    delay(networkTick.toLong() - elapsed)
                 }
 
                 snapshotId++

@@ -21,26 +21,27 @@ class GameSimulator(private val playerRepository: PlayerRepository) {
         }
     }
 
-    fun processMovement(lastTick: Long, tickLength: Int) {
+    /**
+     * TODO
+     * - the server is missing 10ms of movement compared with the client
+     */
+    fun processMovement(lastTick: Long, tickLength: Float) {
         playerRepository.getPlayers().forEach { player ->
             player.consumeInput().let { inputQueue ->
                 if (inputQueue.isEmpty()) {
                     player.move(SPEED)
                 } else {
-                    val nextTick = lastTick + tickLength
                     val iterator = inputQueue.toSortedMap().iterator()
-
                     var alreadyMoved = 0
 
                     while(iterator.hasNext()) {
                         val iterable = iterator.next()
-
                         val timestamp = iterable.key
                         val input = iterable.value
 
-                        (SPEED * ((timestamp - lastTick - alreadyMoved) / tickLength)).let {
-                            player.move(it)
-                            alreadyMoved = (alreadyMoved + it).toInt()
+                        (timestamp - lastTick - alreadyMoved).let { movementDuration ->
+                            player.move(SPEED * movementDuration / tickLength)
+                            alreadyMoved = (alreadyMoved + movementDuration).toInt()
                         }
 
                         player.input.up = input.up
@@ -49,9 +50,10 @@ class GameSimulator(private val playerRepository: PlayerRepository) {
                         player.input.right = input.right
 
                         if (!iterator.hasNext()) {
-                            val movementDuration = nextTick - timestamp - alreadyMoved
-                            player.move(SPEED * (movementDuration / tickLength))
-                            alreadyMoved = (alreadyMoved + movementDuration).toInt()
+                            (tickLength - alreadyMoved).let { movementDuration ->
+                                player.move(SPEED * (movementDuration / tickLength))
+                                alreadyMoved = (alreadyMoved + movementDuration).toInt()
+                            }
                         }
 
                         iterator.remove()

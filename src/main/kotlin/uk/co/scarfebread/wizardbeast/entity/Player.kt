@@ -28,6 +28,8 @@ data class Player(
     fun consumeInput() =  inputQueue.toMap().also { inputQueue.clear() }
 
     fun move(speed: Float) {
+        if (speed <= 0) return
+
         if (input.down && !input.up) y -= speed
         if (input.up && !input.down) y += speed
         if (input.left && !input.right) x -= speed
