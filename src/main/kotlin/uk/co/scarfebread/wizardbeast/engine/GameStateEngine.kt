@@ -2,32 +2,45 @@ package uk.co.scarfebread.wizardbeast.engine
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import uk.co.scarfebread.wizardbeast.state.PlayerState
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import uk.co.scarfebread.wizardbeast.client.UdpClient
+import uk.co.scarfebread.wizardbeast.event.EventService
+import uk.co.scarfebread.wizardbeast.entity.PlayerRepository
+import uk.co.scarfebread.wizardbeast.engine.state.server.GameStateManager
 import java.lang.System.currentTimeMillis
 
-class GameStateEngine(private val playerState: PlayerState) {
+class GameStateEngine(
+    private val playerRepository: PlayerRepository,
+    private val gameStateManager: GameStateManager,
+    private val udpClient: UdpClient,
+    private val json: Json = Json { ignoreUnknownKeys = true }
+) {
     fun start() = runBlocking {
         val networkTick = 1000 / 64
+        var snapshotId = 0L
 
         while (true) {
             val startTime = currentTimeMillis()
 
-            playerState.getPlayers().forEach {
-                // TODO send delta (not the state)
-//                serverSocket.send(Datagram(ByteReadPacket("Hello".encodeToByteArray()), InetSocketAddress("127.0.0.1", 9002)))
-            }
+            gameStateManager.createSnapshot(snapshotId)
 
-            // TODO only send clients info they need to know (should be interesting to implement!)
-            // TODO only send clients player data that they can see
-            // TODO client to ack state events so the server knows it will understand subsequent events
-            // - see page 205 - the server knowing packet 207 has been acknowledged, packet 209 can be a delta between 207 and 209
-            // TODO use compression https://stackoverflow.com/questions/13477321/fastest-way-to-gzip-and-udp-a-large-amount-of-strings-in-java
+            playerRepository.getPlayers().forEach { player ->
+                udpClient.send(
+                    json.encodeToString(
+                        gameStateManager.publishState(snapshotId, player)
+                    ),
+                    player.address
+                )
+            }
 
             val elapsed = currentTimeMillis() - startTime
 
             if (elapsed < networkTick) {
                 delay(networkTick - elapsed)
             }
+
+            snapshotId++
         }
     }
 }

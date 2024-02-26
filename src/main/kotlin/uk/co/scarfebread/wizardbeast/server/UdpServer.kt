@@ -1,15 +1,10 @@
 package uk.co.scarfebread.wizardbeast.server
 
-import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.BoundDatagramSocket
 import io.ktor.network.sockets.Datagram
-import io.ktor.network.sockets.InetSocketAddress
-import io.ktor.network.sockets.ServerSocket
 import io.ktor.network.sockets.SocketAddress
-import io.ktor.network.sockets.aSocket
 import io.ktor.utils.io.core.ByteReadPacket
 import io.ktor.utils.io.core.readUTF8Line
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import uk.co.scarfebread.wizardbeast.event.EventService
@@ -18,7 +13,6 @@ import uk.co.scarfebread.wizardbeast.event.RegisterEvent
 import uk.co.scarfebread.wizardbeast.server.request.PlayerActionRequest
 import uk.co.scarfebread.wizardbeast.server.request.RegisterRequest
 import uk.co.scarfebread.wizardbeast.server.request.Request
-import uk.co.scarfebread.wizardbeast.state.PlayerState
 
 class UdpServer(
     private val serverSocket: BoundDatagramSocket,
